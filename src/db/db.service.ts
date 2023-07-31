@@ -180,7 +180,7 @@ export class DbService {
     return this.db.albums.find((el) => el.id === id);
   }
 
-  addAlbum(entity: Album) {
+  addAlbum(entity: Omit<Album, 'id'>) {
     const newAlbum = {
       id: randomUUID(),
       ...entity,
@@ -210,6 +210,12 @@ export class DbService {
         this.db.albums.find((el) => el.id === id),
       );
       this.db.albums.splice(albumIndex, 1);
+
+      this.db.tracks.forEach((el, i, arr) => {
+        if (el.albumId === id) {
+          arr[i] = { albumId: null, ...el };
+        }
+      });
 
       if (this.db.favs.albums.includes(id)) {
         this.db.favs.albums.splice(this.db.favs.albums.indexOf(id), 1);

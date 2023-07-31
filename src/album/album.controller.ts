@@ -36,7 +36,6 @@ export class AlbumController {
     } else {
       res.status(HttpStatus.BAD_REQUEST).send();
     }
-    return this.albumService.create(createAlbumDto);
   }
 
   @Get()

@@ -37,7 +37,6 @@ export class TrackController {
     } else {
       res.status(HttpStatus.BAD_REQUEST).send();
     }
-    return this.trackService.create(createTrackDto);
   }
 
   @Get()

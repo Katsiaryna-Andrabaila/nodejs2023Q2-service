@@ -101,26 +101,56 @@ export class DbService {
     return this.db.artists.find((el) => el.id === id);
   }
 
-  addArtist(entity: Artist) {
-    this.db.artists.push(entity);
+  addArtist(entity: Omit<Artist, 'id'>) {
+    const newArtist = {
+      id: randomUUID(),
+      ...entity,
+    };
+    this.db.artists.push(newArtist);
+
     return this.db.artists[this.db.artists.length - 1];
   }
 
   updateArtist(id: string, body: Omit<Artist, 'id'>) {
     let artist = this.db.artists.find((el) => el.id === id);
-    artist = { ...body, id };
 
-    return artist;
+    if (artist) {
+      artist = { ...body, id };
+
+      return artist;
+    } else {
+      return null;
+    }
   }
 
   deleteArtist(id: string) {
-    const artistIndex = this.db.artists.indexOf(
-      this.db.artists.find((el) => el.id === id),
-    );
-    this.db.artists.splice(artistIndex, 1);
+    const artist = this.db.artists.find((el) => el.id === id);
 
-    if (this.db.favs.artists.includes(id)) {
-      this.db.favs.artists.splice(this.db.favs.artists.indexOf(id), 1);
+    if (artist) {
+      const artistIndex = this.db.artists.indexOf(
+        this.db.artists.find((el) => el.id === id),
+      );
+      this.db.artists.splice(artistIndex, 1);
+
+      if (this.db.favs.artists.includes(id)) {
+        this.db.favs.artists.splice(this.db.favs.artists.indexOf(id), 1);
+      }
+
+      this.db.tracks.forEach((el, i, arr) => {
+        if (el.artistId === id) {
+          arr[i] = { artistId: null, ...el };
+        }
+      });
+
+      this.db.albums.forEach((el, i, arr) => {
+        if (el.artistId === id) {
+          arr[i] = { artistId: null, ...el };
+        }
+      });
+
+      return 'ok';
+    } else {
+      return null;
     }
   }
 

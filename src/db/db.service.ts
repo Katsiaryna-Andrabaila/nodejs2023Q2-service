@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Album, Artist, DB, Favorites, Track } from './entities/db.entity';
-import { User } from './entities/db.entity';
+import { randomUUID } from 'crypto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
 
 @Injectable()
 export class DbService {
@@ -26,17 +28,27 @@ export class DbService {
   getUserById(id: string) {
     const user = this.db.users.find((el) => el.id === id);
 
-    return {
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return user
+      ? {
+          id: user.id,
+          login: user.login,
+          version: user.version,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        }
+      : null;
   }
 
-  addUser(entity: User) {
-    this.db.users.push(entity);
+  addUser(entity: CreateUserDto) {
+    const newUser = {
+      id: randomUUID(),
+      password: entity.password,
+      login: entity.login,
+      version: 1,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    this.db.users.push(newUser);
 
     const user = this.db.users[this.db.users.length - 1];
 
@@ -49,24 +61,36 @@ export class DbService {
     };
   }
 
-  updateUser(id: string, newPassword: string) {
+  updateUser(id: string, body: UpdateUserDto) {
+    const { oldPassword, newPassword } = body;
     const user = this.db.users.find((el) => el.id === id);
-    user.password = newPassword;
 
-    return {
-      id: user.id,
-      login: user.login,
-      version: user.version++,
-      createdAt: user.createdAt,
-      updatedAt: Date.now(),
-    };
+    if (user && oldPassword === user.password) {
+      user.password = newPassword;
+
+      return {
+        id: user.id,
+        login: user.login,
+        version: ++user.version,
+        createdAt: user.createdAt,
+        updatedAt: Date.now(),
+      };
+    } else if (user && oldPassword !== user.password) {
+      return 'wrong';
+    } else {
+      return null;
+    }
   }
 
   deleteUser(id: string) {
-    const userIndex = this.db.users.indexOf(
-      this.db.users.find((el) => el.id === id),
-    );
-    this.db.users.splice(userIndex, 1);
+    const user = this.db.users.find((el) => el.id === id);
+    if (user) {
+      const userIndex = this.db.users.indexOf(user);
+      this.db.users.splice(userIndex, 1);
+      return 'ok';
+    } else {
+      return null;
+    }
   }
 
   getArtists() {

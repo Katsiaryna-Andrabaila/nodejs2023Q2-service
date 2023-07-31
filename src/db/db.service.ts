@@ -132,26 +132,43 @@ export class DbService {
     return this.db.tracks.find((el) => el.id === id);
   }
 
-  addTrack(entity: Track) {
-    this.db.tracks.push(entity);
+  addTrack(entity: Omit<Track, 'id'>) {
+    const newTrack = {
+      id: randomUUID(),
+      ...entity,
+    };
+    this.db.tracks.push(newTrack);
+
     return this.db.tracks[this.db.tracks.length - 1];
   }
 
   updateTrack(id: string, body: Omit<Track, 'id'>) {
     let track = this.db.tracks.find((el) => el.id === id);
-    track = { ...body, id };
 
-    return track;
+    if (track) {
+      track = { ...body, id };
+
+      return track;
+    } else {
+      return null;
+    }
   }
 
   deleteTrack(id: string) {
-    const trackIndex = this.db.tracks.indexOf(
-      this.db.tracks.find((el) => el.id === id),
-    );
-    this.db.tracks.splice(trackIndex, 1);
+    const track = this.db.tracks.find((el) => el.id === id);
 
-    if (this.db.favs.tracks.includes(id)) {
-      this.db.favs.tracks.splice(this.db.favs.tracks.indexOf(id), 1);
+    if (track) {
+      const trackIndex = this.db.tracks.indexOf(
+        this.db.tracks.find((el) => el.id === id),
+      );
+      this.db.tracks.splice(trackIndex, 1);
+
+      if (this.db.favs.tracks.includes(id)) {
+        this.db.favs.tracks.splice(this.db.favs.tracks.indexOf(id), 1);
+      }
+      return 'ok';
+    } else {
+      return null;
     }
   }
 
@@ -164,25 +181,43 @@ export class DbService {
   }
 
   addAlbum(entity: Album) {
-    this.db.albums.push(entity);
+    const newAlbum = {
+      id: randomUUID(),
+      ...entity,
+    };
+    this.db.albums.push(newAlbum);
+
     return this.db.albums[this.db.albums.length - 1];
   }
 
   updateAlbum(id: string, body: Omit<Album, 'id'>) {
     let album = this.db.albums.find((el) => el.id === id);
-    album = { ...body, id };
 
-    return album;
+    if (album) {
+      album = { ...body, id };
+
+      return album;
+    } else {
+      return null;
+    }
   }
 
   deleteAlbum(id: string) {
-    const albumIndex = this.db.albums.indexOf(
-      this.db.albums.find((el) => el.id === id),
-    );
-    this.db.albums.splice(albumIndex, 1);
+    const album = this.db.albums.find((el) => el.id === id);
 
-    if (this.db.favs.albums.includes(id)) {
-      this.db.favs.albums.splice(this.db.favs.albums.indexOf(id), 1);
+    if (album) {
+      const albumIndex = this.db.albums.indexOf(
+        this.db.albums.find((el) => el.id === id),
+      );
+      this.db.albums.splice(albumIndex, 1);
+
+      if (this.db.favs.albums.includes(id)) {
+        this.db.favs.albums.splice(this.db.favs.albums.indexOf(id), 1);
+      }
+
+      return 'ok';
+    } else {
+      return null;
     }
   }
 

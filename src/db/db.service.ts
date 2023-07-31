@@ -79,6 +79,7 @@ export class DbService {
 
   addArtist(entity: Artist) {
     this.db.artists.push(entity);
+    return this.db.artists[this.db.artists.length - 1];
   }
 
   updateArtist(id: string, body: Omit<Artist, 'id'>) {
@@ -89,10 +90,14 @@ export class DbService {
   }
 
   deleteArtist(id: string) {
-    const userIndex = this.db.artists.indexOf(
+    const artistIndex = this.db.artists.indexOf(
       this.db.artists.find((el) => el.id === id),
     );
-    this.db.artists.splice(userIndex, 1);
+    this.db.artists.splice(artistIndex, 1);
+
+    if (this.db.favs.artists.includes(id)) {
+      this.db.favs.artists.splice(this.db.favs.artists.indexOf(id), 1);
+    }
   }
 
   getTracks() {
@@ -105,6 +110,7 @@ export class DbService {
 
   addTrack(entity: Track) {
     this.db.tracks.push(entity);
+    return this.db.tracks[this.db.tracks.length - 1];
   }
 
   updateTrack(id: string, body: Omit<Track, 'id'>) {
@@ -115,10 +121,14 @@ export class DbService {
   }
 
   deleteTrack(id: string) {
-    const userIndex = this.db.tracks.indexOf(
+    const trackIndex = this.db.tracks.indexOf(
       this.db.tracks.find((el) => el.id === id),
     );
-    this.db.tracks.splice(userIndex, 1);
+    this.db.tracks.splice(trackIndex, 1);
+
+    if (this.db.favs.tracks.includes(id)) {
+      this.db.favs.tracks.splice(this.db.favs.tracks.indexOf(id), 1);
+    }
   }
 
   getAlbums() {
@@ -131,6 +141,7 @@ export class DbService {
 
   addAlbum(entity: Album) {
     this.db.albums.push(entity);
+    return this.db.albums[this.db.albums.length - 1];
   }
 
   updateAlbum(id: string, body: Omit<Album, 'id'>) {
@@ -141,10 +152,14 @@ export class DbService {
   }
 
   deleteAlbum(id: string) {
-    const userIndex = this.db.albums.indexOf(
+    const albumIndex = this.db.albums.indexOf(
       this.db.albums.find((el) => el.id === id),
     );
-    this.db.albums.splice(userIndex, 1);
+    this.db.albums.splice(albumIndex, 1);
+
+    if (this.db.favs.albums.includes(id)) {
+      this.db.favs.albums.splice(this.db.favs.albums.indexOf(id), 1);
+    }
   }
 
   getFavs() {

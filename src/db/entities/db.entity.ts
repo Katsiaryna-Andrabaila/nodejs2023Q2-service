@@ -1,3 +1,5 @@
+import { DbService } from '../db.service';
+
 export interface User {
   id: string; // uuid v4
   login: string;
@@ -41,3 +43,5 @@ export type DB = {
   albums: Album[];
   favs: Favorites;
 };
+
+export const db = new DbService();

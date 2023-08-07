@@ -258,26 +258,45 @@ export class DbService {
   }
 
   getFavs() {
-    const artists = this.db.favs.artists.forEach((el) =>
-      this.db.artists.filter((item) => item.id === el),
+    const artists = this.db.artists.filter((el) =>
+      this.db.favs.artists.includes(el.id),
     );
 
-    const albums = this.db.favs.albums.forEach((el) =>
-      this.db.albums.filter((item) => item.id === el),
+    const albums = this.db.albums.filter((el) =>
+      this.db.favs.albums.includes(el.id),
     );
 
-    const tracks = this.db.favs.tracks.forEach((el) =>
-      this.db.tracks.filter((item) => item.id === el),
+    const tracks = this.db.tracks.filter((el) =>
+      this.db.favs.tracks.includes(el.id),
     );
 
     return { artists, albums, tracks };
   }
 
   addFav(key: keyof Favorites, entity: string) {
-    this.db.favs[key].push(entity);
+    const targetElement = this.db[key].some(
+      (el: Track | Artist | Album) => el.id === entity,
+    );
+
+    if (targetElement) {
+      this.db.favs[key].push(entity);
+      return 'Entity was successfully added';
+    } else {
+      return null;
+    }
   }
 
-  deleteFav(key: keyof Favorites) {
-    delete this.db.favs[key];
+  deleteFav(key: keyof Favorites, id: string) {
+    const targetElement = this.db[key].some(
+      (el: Track | Artist | Album) => el.id === id,
+    );
+
+    if (targetElement) {
+      const keyArray = this.db.favs[key];
+      keyArray.splice(keyArray.indexOf(id), 1);
+      return 'Entity was not found';
+    } else {
+      return null;
+    }
   }
 }

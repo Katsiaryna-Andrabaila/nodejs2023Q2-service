@@ -130,23 +130,25 @@ export class DbService {
       const artistIndex = this.db.artists.indexOf(
         this.db.artists.find((el) => el.id === id),
       );
-      this.db.artists.splice(artistIndex, 1);
 
+      const favsIndex = this.db.favs.artists.indexOf(id);
       if (this.db.favs.artists.includes(id)) {
-        this.db.favs.artists.splice(this.db.favs.artists.indexOf(id), 1);
+        this.db.favs.artists.splice(favsIndex, 1);
       }
 
-      this.db.tracks.forEach((el, i, arr) => {
+      this.db.tracks.forEach((el) => {
         if (el.artistId === id) {
-          arr[i] = { artistId: null, ...el };
+          el.artistId = null;
         }
       });
 
-      this.db.albums.forEach((el, i, arr) => {
+      this.db.albums.forEach((el) => {
         if (el.artistId === id) {
-          arr[i] = { artistId: null, ...el };
+          el.artistId = null;
         }
       });
+
+      this.db.artists.splice(artistIndex, 1);
 
       return 'ok';
     } else {
@@ -241,10 +243,9 @@ export class DbService {
       );
       this.db.albums.splice(albumIndex, 1);
 
-      this.db.tracks.forEach((el, i, arr) => {
-        if (el.albumId === id) {
-          arr[i] = { albumId: null, ...el };
-        }
+      const tracks = this.db.tracks.filter((el) => el.albumId === id);
+      tracks.forEach((el) => {
+        el.albumId = null;
       });
 
       if (this.db.favs.albums.includes(id)) {

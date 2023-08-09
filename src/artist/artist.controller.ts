@@ -77,9 +77,8 @@ export class ArtistController {
     const correctDto =
       updateArtistDto.hasOwnProperty('name') &&
       updateArtistDto.hasOwnProperty('grammy') &&
-      updateArtistDto.name &&
       typeof updateArtistDto.name === 'string' &&
-      updateArtistDto.grammy;
+      typeof updateArtistDto.grammy === 'boolean';
 
     if (correctDto) {
       if (!updatedArtist) {
